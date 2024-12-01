@@ -2,6 +2,7 @@ const std = @import("std");
 const input = @embedFile("day_01.txt");
 
 pub fn main() !void {
+    const start = std.time.nanoTimestamp();
     var left = std.ArrayList(i32).init(std.heap.page_allocator);
     defer left.deinit();
 
@@ -26,5 +27,7 @@ pub fn main() !void {
         total += @abs(leftItem - rightItem);
     }
 
-    std.debug.print("Solution: {d}\n", .{total}); // 1660292
+    const end = std.time.nanoTimestamp();
+    const elapsedTimeMs = @divFloor(end - start, 1_000_000);
+    std.debug.print("Solution: {d} (completed in: {d} ms)\n", .{total, elapsedTimeMs}); // 1660292
 }
