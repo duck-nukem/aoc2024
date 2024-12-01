@@ -29,5 +29,5 @@ pub fn main() !void {
 
     const end = std.time.nanoTimestamp();
     const elapsedTimeMs = @divFloor(end - start, 1_000_000);
-    std.debug.print("Solution: {d} (completed in: {d} ms)\n", .{total, elapsedTimeMs}); // 1660292
+    std.debug.print("Solution: {d} (completed in: {d} ms)\n", .{ total, elapsedTimeMs }); // 1660292
 }
