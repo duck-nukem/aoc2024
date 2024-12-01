@@ -2,33 +2,20 @@ const std = @import("std");
 const input = @embedFile("day_01.txt");
 
 pub fn main() !void {
-    const allocator = std.heap.page_allocator;
-    var left = std.ArrayList(i32).init(allocator);
-    var right = std.ArrayList(i32).init(allocator);
-
+    var left = std.ArrayList(i32).init(std.heap.page_allocator);
     defer left.deinit();
+
+    var right = std.ArrayList(i32).init(std.heap.page_allocator);
     defer right.deinit();
 
-    var it = std.mem.tokenizeScalar(u8, input, '\n');
-    while (it.next()) |token| {
-        var parts = std.mem.split(u8, token, " ");
+    var rows = std.mem.tokenizeScalar(u8, input, '\n');
+    while (rows.next()) |row| {
+        var parts = std.mem.split(u8, row, "   ");
+        const leftDistance = try std.fmt.parseInt(i32, parts.next().?, 10);
+        const rightDistance = try std.fmt.parseInt(i32, parts.next().?, 10);
 
-        var index: usize=0;
-        while (parts.next()) |part| {
-            if (part.len == 0) {
-                continue;
-            }
-
-            const value = try std.fmt.parseInt(i32, part, 10);
-
-            if (index == 0) {
-                try left.append(value);
-            } else {
-                try right.append(value);
-            }
-
-            index +=1;
-        }
+        try left.append(leftDistance);
+        try right.append(rightDistance);
     }
 
     std.mem.sort(i32, left.items, {}, comptime std.sort.asc(i32));
@@ -36,8 +23,8 @@ pub fn main() !void {
 
     var total: u32 = 0;
     for (left.items, right.items) |leftItem, rightItem| {
-        std.debug.print("{d} {d} {d}\n", .{leftItem, rightItem, @abs(leftItem - rightItem)});
         total += @abs(leftItem - rightItem);
     }
-    std.debug.print("Solution: {d}\n", .{total});
+
+    std.debug.print("Solution: {d}\n", .{total}); // 1660292
 }
