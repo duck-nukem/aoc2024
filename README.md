@@ -14,6 +14,10 @@ For the solution: `zig run src/day_xx.zig`
 
 ## Notes
 
+Docs: https://ziglang.org/documentation/master/
+
+Complementary docs: https://zig.guide/
+
 Some thoughts are borrowed from: https://kristoff.it/blog/advent-of-code-zig/ - 
 like embedding the input data into the application, as opposed to reading it from stdin
 
