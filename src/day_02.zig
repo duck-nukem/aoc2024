@@ -34,7 +34,7 @@ pub fn main() !void {
             }
         }
 
-        if (try isCollectionSorted(i32, original.items)) {
+        if (try hasConsistentOrdering(i32, original.items)) {
             safeReportsCount += 1;
         }
     }
@@ -48,14 +48,15 @@ fn computeDirection(a: i32, b: i32) Direction {
     return if (a - b > 0) Direction.Ascending else Direction.Descending;
 }
 
-/// returns false if the sorting direction is not the same throughout the elements
-fn isCollectionSorted(comptime T: type, slice: []const T) !bool {
+/// returns false if the ordering direction is not the same throughout all the elements
+fn hasConsistentOrdering(comptime T: type, slice: []const T) !bool {
     if (slice.len <= 2) {
-        // any collection with 2 items or less can be deemed as sorted
+        // any collection with 2 items or less can be deemed as ordered
         return true;
     }
 
-    const direction: Direction = computeDirection(slice[1], slice[0]);
+    const initialDirection: Direction = computeDirection(slice[1], slice[0]);
+
     for (slice[1..], 0..) |current, i| {
         const previous = slice[i];
         const diff = current - previous;
@@ -64,7 +65,7 @@ fn isCollectionSorted(comptime T: type, slice: []const T) !bool {
 
         const currentDirection: Direction = computeDirection(current, previous);
 
-        if (direction != currentDirection) {
+        if (initialDirection != currentDirection) {
             return false;
         }
     }
@@ -77,7 +78,7 @@ const expect = std.testing.expect;
 test "isSorted should return true for small collections" {
     const slice = [_]i32{ 1, 2 };
 
-    const isOrdered = try isCollectionSorted(i32, &slice);
+    const isOrdered = try hasConsistentOrdering(i32, &slice);
 
     try expect(isOrdered);
 }
@@ -85,7 +86,7 @@ test "isSorted should return true for small collections" {
 test "isSorted should return true for elements sorted ascending" {
     const slice = [_]i32{ 1, 2, 3 };
 
-    const isOrdered = try isCollectionSorted(i32, &slice);
+    const isOrdered = try hasConsistentOrdering(i32, &slice);
 
     try expect(isOrdered);
 }
@@ -93,7 +94,7 @@ test "isSorted should return true for elements sorted ascending" {
 test "isSorted should return true for elements sorted descending" {
     const slice = [_]i32{ 3, 2, 1 };
 
-    const isOrdered = try isCollectionSorted(i32, &slice);
+    const isOrdered = try hasConsistentOrdering(i32, &slice);
 
     try expect(isOrdered);
 }
@@ -101,7 +102,7 @@ test "isSorted should return true for elements sorted descending" {
 test "isSorted should return false for unordered elements" {
     const slice = [_]i32{ 2, 1, 3 };
 
-    const isOrdered = try isCollectionSorted(i32, &slice);
+    const isOrdered = try hasConsistentOrdering(i32, &slice);
 
     try expect(!isOrdered);
 }
