@@ -42,26 +42,39 @@ pub fn main() !void {
     std.debug.print("Safe reports in total: {}\n", .{safeReportsCount});
 }
 
-/// clones the original data, then sorts it ascending first, descending second to check for equality
+const Direction = enum(i8) { Descending = -1, Ascending = 1 };
+
+fn computeDirection(a: i32, b: i32) Direction {
+    return if (a - b > 0) Direction.Ascending else Direction.Descending;
+}
+
+/// returns false if the sorting direction is not the same throughout the elements
 fn isCollectionSorted(comptime T: type, slice: []const T) !bool {
-    var copy = std.ArrayList(i32).init(std.heap.page_allocator);
-    defer copy.deinit();
-    try copy.appendSlice(slice);
-
-    std.mem.sort(i32, copy.items, {}, comptime std.sort.asc(i32));
-    var isSorted = std.mem.eql(i32, slice, copy.items);
-
-    if (!isSorted) {
-        std.mem.sort(i32, copy.items, {}, comptime std.sort.desc(i32));
-        isSorted = std.mem.eql(i32, slice, copy.items);
+    if (slice.len <= 2) {
+        // any collection with 2 items or less can be deemed as sorted
+        return true;
     }
 
-    return isSorted;
+    const direction: Direction = computeDirection(slice[1], slice[0]);
+    for (slice[1..], 0..) |current, i| {
+        const previous = slice[i];
+        const diff = current - previous;
+
+        if (diff == 0) continue;
+
+        const currentDirection: Direction = computeDirection(current, previous);
+
+        if (direction != currentDirection) {
+            return false;
+        }
+    }
+
+    return true;
 }
 
 const expect = std.testing.expect;
 
-test "isSorted should return true for elements sorted ascending" {
+test "isSorted should return true for small collections" {
     const slice = [_]i32{ 1, 2 };
 
     const isOrdered = try isCollectionSorted(i32, &slice);
@@ -69,8 +82,16 @@ test "isSorted should return true for elements sorted ascending" {
     try expect(isOrdered);
 }
 
+test "isSorted should return true for elements sorted ascending" {
+    const slice = [_]i32{ 1, 2, 3 };
+
+    const isOrdered = try isCollectionSorted(i32, &slice);
+
+    try expect(isOrdered);
+}
+
 test "isSorted should return true for elements sorted descending" {
-    const slice = [_]i32{ 2, 1 };
+    const slice = [_]i32{ 3, 2, 1 };
 
     const isOrdered = try isCollectionSorted(i32, &slice);
 
