@@ -1,0 +1,1 @@
+pub const Base = enum(u8) { Ten = 10 };

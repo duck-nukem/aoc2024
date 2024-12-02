@@ -1,5 +1,6 @@
 const std = @import("std");
 const input = @embedFile("day_01.txt");
+const numbers = @import("numbers.zig");
 
 pub fn main() !void {
     const start = std.time.nanoTimestamp();
@@ -14,8 +15,8 @@ pub fn main() !void {
     var rows = std.mem.tokenizeScalar(u8, input, '\n');
     while (rows.next()) |row| {
         var parts = std.mem.split(u8, row, "   ");
-        const occurrence = try std.fmt.parseInt(i32, parts.next().?, 10);
-        const similarityKey = try std.fmt.parseInt(i32, parts.next().?, 10);
+        const occurrence = try std.fmt.parseInt(i32, parts.next().?, @intFromEnum(numbers.Base.Ten));
+        const similarityKey = try std.fmt.parseInt(i32, parts.next().?, @intFromEnum(numbers.Base.Ten));
 
         const count = similarityCounter.get(similarityKey) orelse 0;
         try similarityCounter.put(similarityKey, count + 1);

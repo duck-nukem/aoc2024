@@ -1,5 +1,6 @@
 const std = @import("std");
 const input = @embedFile("day_01.txt");
+const numbers = @import("numbers.zig");
 
 pub fn main() !void {
     const start = std.time.nanoTimestamp();
@@ -12,8 +13,8 @@ pub fn main() !void {
     var rows = std.mem.tokenizeScalar(u8, input, '\n');
     while (rows.next()) |row| {
         var parts = std.mem.split(u8, row, "   ");
-        const leftDistance = try std.fmt.parseInt(i32, parts.next().?, 10);
-        const rightDistance = try std.fmt.parseInt(i32, parts.next().?, 10);
+        const leftDistance = try std.fmt.parseInt(i32, parts.next().?, @intFromEnum(numbers.Base.Ten));
+        const rightDistance = try std.fmt.parseInt(i32, parts.next().?, @intFromEnum(numbers.Base.Ten));
 
         try left.append(leftDistance);
         try right.append(rightDistance);
