@@ -25,8 +25,12 @@ pub fn main() !void {
             }
 
             const diff = @abs(current - last.?);
-            if (diff < @intFromEnum(ReportSafeStepThreshold.Lower) or diff > @intFromEnum(ReportSafeStepThreshold.Upper)) {
-                continue :outer;
+            const lowerThreshold = @intFromEnum(ReportSafeStepThreshold.Lower);
+            const upperThreshold = @intFromEnum(ReportSafeStepThreshold.Upper);
+            const isWithinBounds = lowerThreshold <= diff and diff <= upperThreshold;
+
+            if (!isWithinBounds) {
+                continue :outer; // if any point is invalid, the whole row becomes invalid and can be discarded
             }
         }
 
