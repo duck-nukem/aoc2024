@@ -25,16 +25,17 @@ pub fn main() !void {
 
     _ = try file.readAll(buffer);
 
-    const mul_pattern = "mul(";
+    const pattern = "mul(";
     var i: usize = 0;
 
     var total: i32 = 0;
     while (i < buffer.len) : (i += 1) {
         // look ahead for "mul(" to find valid beginnings
-        if (i + mul_pattern.len < buffer.len and std.mem.eql(u8, buffer[i .. i + mul_pattern.len], mul_pattern)) {
-            var current_offset = i + mul_pattern.len;
+        if (i + pattern.len < buffer.len and std.mem.eql(u8, buffer[i .. i + pattern.len], pattern)) {
+            var current_offset = i + pattern.len;
 
             const first_num_start = current_offset;
+            // keep consuming digits
             while (current_offset < buffer.len and isDigit(buffer[current_offset])) current_offset += 1;
 
             // separator "," between the two numbers to multiply
@@ -44,9 +45,10 @@ pub fn main() !void {
             current_offset += 1;
 
             const second_num_start = current_offset;
+            // keep consuming digits
             while (current_offset < buffer.len and isDigit(buffer[current_offset])) current_offset += 1;
 
-            // valid ending; completing mul({d}, {d})
+            // find a valid ending; completing mul({d}, {d})
             if (current_offset >= buffer.len or buffer[current_offset] != ')') continue;
 
             const second_num = try parseInteger(buffer, second_num_start, current_offset);
